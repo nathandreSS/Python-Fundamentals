@@ -15,18 +15,9 @@ class BColors:
 
 def welcome():
     print(BColors.OKCYAN)
-    print("******************************")
-    print("* Welcome to the guess game! *")
-    print("******************************", end=f'\n\n{BColors.ENDC}')
-
-
-def change_color(remaining_attempts):
-    if remaining_attempts > 10:
-        print(BColors.OKCYAN)
-    elif remaining_attempts > 5:
-        print(BColors.WARNING)
-    elif remaining_attempts > 0:
-        print(BColors.FAIL)
+    print("********************************")
+    print("* Welcome to the hangman game! *")
+    print("********************************", end=f'\n\n{BColors.ENDC}')
 
 
 def select_level(levels):
@@ -89,12 +80,12 @@ def main():
     welcome()
 
     levels = ["Easy", "Intermediate", "Hard"]
-
-    total_attempts = select_level(levels)
-
-    play(total_attempts, number)
-
-    print(f"Game Over!")
+    #
+    # total_attempts = select_level(levels)
+    #
+    # play(total_attempts, number)
+    #
+    # print(f"Game Over!")
 
 
 if __name__ == "__main__":

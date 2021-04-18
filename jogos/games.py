@@ -53,9 +53,6 @@ def main():
     game = select_game(games)
 
     play(game)
-    #
-    # print(f"Game Over!")
-
 
 main()
 

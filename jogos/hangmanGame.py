@@ -13,6 +13,17 @@ class BColors:
     UNDERLINE = '\033[4m'
 
 
+def main():
+
+    welcome()
+
+    secret_word = load_secret_word()
+
+    correct_letters = initialize_correct_letters(secret_word)
+
+    play(secret_word, correct_letters)
+
+
 def welcome():
     print(BColors.OKCYAN)
     print("********************************")
@@ -20,72 +31,135 @@ def welcome():
     print("********************************", end=f'\n\n{BColors.ENDC}')
 
 
-def select_level(levels):
-    while True:
-        print(BColors.BOLD)
-        for i, level in enumerate(levels):
-            print(f"({i + 1}) {level}")
-        print(BColors.ENDC)
+def load_secret_word():
+    secret_word_file = open('secret_word.txt', 'r')
+    words = []
 
-        level = int(input("Select the Level: "))
+    for line in secret_word_file:
+        words.append(line.strip().upper())
 
-        if level == 1:
-            print(f"{BColors.OKCYAN}\n\nEASY", end=f"\n\n{BColors.ENDC}")
-            return 20
-        elif level == 2:
-            print(f"{BColors.WARNING}\n\nINTERMEDIATE", end=f"\n\n{BColors.ENDC}")
-            return 10
-        elif level == 3:
-            print(f"{BColors.FAIL}\n\nHARD", end=f"\n\n{BColors.ENDC}")
-            return 5
+    secret_word_file.close()
+    return words[random.randrange(0, len(words))]
+
+
+def initialize_correct_letters(secret_word):
+    return ['_' for letter in secret_word]
+
+
+def play(secret_word, correct_letters):
+    hanged = False
+    completed = False
+    misses = 0
+
+    while not hanged and not completed:
+        guessed_char = input("Type a letter: ").strip().upper()
+
+        if guessed_char in secret_word:
+            update_correct_letters(correct_letters, secret_word, guessed_char)
         else:
-            print(f"{BColors.FAIL}\n\nInvalid level!", end=f'\n\n{BColors.ENDC}')
-            continue
-        break
+            misses += 1
+            draw_hang(misses)
+        print(correct_letters)
+
+        hanged = misses == 7
+        completed = '_' not in correct_letters
+
+    if completed:
+        print_win_message()
+    else:
+        print_lost_message(secret_word)
 
 
-def play(total_attempts, number):
-    score = 100
-    for current_attempt in range(1, total_attempts + 1):
-
-        print(f"Attempt {current_attempt} of {total_attempts}")
-        guess = int(input("Type a number between 1 and 100: "))
-        if guess < 1 or guess > 100:
-            print("Invalid guessing number!")
-            continue
-
-        hit = guess == number
-        higher_guess = guess > number
-        smaller_guess = guess < number
-        last_chance = current_attempt == total_attempts
-        if hit:
-            print(f"{BColors.OKGREEN}CONGRATULATIONS! YOU ARE A MONSTER OF GUESSING!", end=f"\n\n{BColors.ENDC}")
-            print(f"SCORE: {score}")
-            break
-        else:
-            score = round(score - abs(number - guess) / 2)
-            print(BColors.FAIL)
-            if last_chance:
-                score = 0
-                print(f"\n\nYOU LOSE! THE SECRET NUMBER WAS {number}!", end=f"\n\n")
-            elif higher_guess:
-                print(f"\nYou missed! your guess was higher than the secret number.", end=f"\n\n")
-            elif smaller_guess:
-                print(f"\nYou missed! your guess was smaller than the secret number.", end=f"\n\n")
-            print(BColors.ENDC)
+def update_correct_letters(correct_letters, secret_word, guessed_char):
+    for index, letter in enumerate(secret_word):
+        if letter.upper() == guessed_char.upper():
+            correct_letters[index] = letter
+    return correct_letters
 
 
-def main():
-    number = random.randrange(1, 101)
-    welcome()
+def draw_hang(misses):
+    print("  _______     ")
+    print(" |/      |    ")
 
-    levels = ["Easy", "Intermediate", "Hard"]
-    #
-    # total_attempts = select_level(levels)
-    #
-    # play(total_attempts, number)
-    #
-    # print(f"Game Over!")
+    if(misses == 1):
+        print(" |      (_)   ")
+        print(" |            ")
+        print(" |            ")
+        print(" |            ")
+
+    if(misses == 2):
+        print(" |      (_)   ")
+        print(" |      \     ")
+        print(" |            ")
+        print(" |            ")
+
+    if(misses == 3):
+        print(" |      (_)   ")
+        print(" |      \|    ")
+        print(" |            ")
+        print(" |            ")
+
+    if(misses == 4):
+        print(" |      (_)   ")
+        print(" |      \|/   ")
+        print(" |            ")
+        print(" |            ")
+
+    if(misses == 5):
+        print(" |      (_)   ")
+        print(" |      \|/   ")
+        print(" |       |    ")
+        print(" |            ")
+
+    if(misses == 6):
+        print(" |      (_)   ")
+        print(" |      \|/   ")
+        print(" |       |    ")
+        print(" |      /     ")
+
+    if (misses == 7):
+        print(" |      (_)   ")
+        print(" |      \|/   ")
+        print(" |       |    ")
+        print(" |      / \   ")
+
+    print(" |            ")
+    print("_|___         ")
+    print()
+
+
+def print_win_message():
+    print("Congratulations, you win!")
+    print("       ___________      ")
+    print("      '._==_==_=_.'     ")
+    print("      .-\\:      /-.    ")
+    print("     | (|:.     |) |    ")
+    print("      '-|:.     |-'     ")
+    print("        \\::.    /      ")
+    print("         '::. .'        ")
+    print("           ) (          ")
+    print("         _.' '._        ")
+    print("        '-------'       ")
+
+def print_lost_message(secret_word):
+    print("Damn, You were hanged!")
+    print(f"The word was {secret_word}")
+    print("    _______________         ")
+    print("   /               \       ")
+    print("  /                 \      ")
+    print("//                   \/\  ")
+    print("\|   XXXX     XXXX   | /   ")
+    print(" |   XXXX     XXXX   |/     ")
+    print(" |   XXX       XXX   |      ")
+    print(" |                   |      ")
+    print(" \__      XXX      __/     ")
+    print("   |\     XXX     /|       ")
+    print("   | |           | |        ")
+    print("   | I I I I I I I |        ")
+    print("   |  I I I I I I  |        ")
+    print("   \_             _/       ")
+    print("     \_         _/         ")
+    print("       \_______/           ")
 
 
 if __name__ == "__main__":
